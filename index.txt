@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CE Reference 5 Answer Sheet System</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #AAA7AD;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #timer {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #dc2626;
+      margin: 20px 0;
+    }
+
+    .sheet {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .column {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .question {
+      margin-bottom: 18px;
+    }
+
+    .question-number {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 10px;
+      min-width: 60px;
+      min-height: 60px;
+      border-radius: 12px;
+      border: 2px solid #d1d5db;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    label:hover {
+      background: #dbeafe;
+    }
+
+    input[type="radio"] {
+      transform: scale(1.4);
+    }
+
+    #result {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 900px;
+      background: white;
+      border-radius: 12px;
+      margin: auto;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .sheet {
+        grid-template-columns: 1fr;
+      }
+
+      label {
+        min-width: 70px;
+        min-height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>CE Reference 5 Answer Sheet System</h1>
+
+  <div class="selection">
+    <select id="examSelect">
+      <option value="">Select Exam</option>
+      <option value="PSAD_MAY2019">PSAD - May 2019</option>
+      <option value="PSAD_NOV2019">PSAD - November 2019</option>
+      <option value="PSAD_NOV2021">PSAD - November 2021</option>
+      <option value="PSAD_MAY2022">PSAD - May 2022</option>
+      <option value="PSAD_NOV2022">PSAD - November 2022</option>
+      <option value="PSAD_APR2023">PSAD - April 2023</option>
+      <option value="PSAD_NOV2023">PSAD - November 2023</option>
+    </select>
+
+    <button onclick="loadExam()">Load Exam</button>
+    <button onclick="startTimer()">Start Timer</button>
+  </div>
+
+  <div id="timer"></div>
+  <div style="text-align:center; margin:10px 0; font-size:14px; color:#6b7280;">
+    To go back to the main page, just refresh your browser.
+  </div>
+
+  <div class="sheet" id="sheet"></div>
+
+  <div style="text-align:center; margin-top:20px;">
+    <button onclick="submitExam()">Submit Exam</button>
+  </div>
+
+  <div id="result"></div>
+
+  <h2>Past Attempts</h2>
+  <canvas id="graph" width="900" height="400"></canvas>
+</div>
+
+<script>
+const exams = {
+  "PSAD_MAY2019": {
+    title: "PSAD - May 2019",
+    duration: 360,
+    total: 69,
+    answers: [
+      'D','C','D','D','A','B','D','B','A','B','A','D','B','A','D','D','C','A','A','C','A','A','A','B','C','D','C','B','D','A','D','C','A','C','A','D','A','B','D','A','B','C','C','B','A','D','D','A','D','C','A','A','C','D','B','A','C','D','B','A','C','B','B','B','D','C','A','C','D'
+    ]
+  },
+
+  "PSAD_NOV2019": {
+    title: "PSAD - November 2019",
+    duration: 360,
+    total: 75,
+    answers: [
+      'B','C','D','A','D','C','D','A','B','B','C','C','A','C','D','C','D','A','B','C','A','A','D','C','C','C','D','A','D','C','B','C','A','B','D','A','A','D','A','B','D','A','D','D','A','B','A','C','B','D','D','A','D','B','D','D','A','D','B','B','D','B','D','B','B','D','C','C','B','C','D','A','B','C','D'
+    ]
+  },
+
+  "PSAD_NOV2021": {
+    title: "PSAD - November 2021",
+    duration: 360,
+    total: 69,
+    answers: [
+      'A','D','C','B','A','D','A','B','B','D','A','D','B','A','C','A','D','D','B','D','A','D','A','C','D','C','A','C','C','B','A','D','C','D','B','B','C','B','A','A','D','B','D','C','C','C','C','B','B','D','B','A','D','B','B','C','D','A','B','D','C','A','D','B','D','A','A','B','C'
+    ]
+  },
+
+  "PSAD_MAY2022": {
+    title: "PSAD - May 2022",
+    duration: 360,
+    total: 72,
+    answers: [
+      'C','D','D','B','A','C','D','A','C','A','B','C','D','A','B','B','A','D','C','C','A','B','B','D','A','C','C','A','B','A','B','D','A','C','C','D','C','B','A','D','C','C','D','D','B','B','D','B','A','B','A','D','C','D','A','B','A','C','B','D','D','D','A','B','C','A','A','B','A','B','D','A'
+    ]
+  },
+
+  "PSAD_NOV2022": {
+    title: "PSAD - November 2022",
+    duration: 360,
+    total: 75,
+    answers: [
+      'C','A','B','D','B','A','C','A','D','D','D','B','B','A','C','A','B','C','A','B','B','D','B','A','A','B','C','A','C','C','B','D','B','B','D','A','C','D','A','C','D','B','C','D','C','B','C','D','D','B','A','C','C','D','B','C','C','D','B','A','C','B','B','A','C','D','C','D','C','D','A','D','B','A','C'
+    ]
+  },
+
+  "PSAD_APR2023": {
+    title: "PSAD - April 2023",
+    duration: 360,
+    total: 74,
+    answers: [
+      'D','A','A','B','C','A','D','A','D','B','D','C','A','A','B','A','A','B','B','D','C','D','D','A','B','D','D','A','B','A','D','C','A','D','A','C','D','A','C','C','D','C','D','C','B','B','C','B','C','D','D','B','A','B','D','C','C','A','B','A','A','B','C','C','D','B','D','A','D','B','C','A','D','C'
+    ]
+  },
+
+  "PSAD_NOV2023": {
+    title: "PSAD - November 2023",
+    duration: 360,
+    total: 73,
+    answers: [
+      'B','A','D','C','D','C','B','A','C','A','D','A','A','D','C','A','A','B','B','A','D','A','B','C','D','C','B','C','C','B','D','A','A','C','B','D','D','B','A','C','D','A','C','C','A','B','B','D','C','A','B','D','D','A','C','A','D','D','B','A','B','C','A','B','B','C','D','A','D','A','C','D'
+    ]
+  }
+};
+
+let currentExam = null;
+let timerInterval;
+let timeLeft = 0;
+
+function loadExam() {
+  const selected = document.getElementById('examSelect').value;
+
+  if (!selected) {
+    alert('Please select an exam first.');
+    return;
+  }
+
+  currentExam = exams[selected];
+
+  generateSheet(currentExam.total);
+
+  timeLeft = currentExam.duration * 60;
+
+  updateTimerDisplay();
+
+  renderGraph();
+}
+
+function startTimer() {
+  if (!currentExam) {
+    alert('Please load an exam first.');
+    return;
+  }
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimerDisplay() {
+  updateTimerDisplay();
+}
+
+function updateTimer() {
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+
+  document.getElementById('timer').innerHTML =
+    `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    submitExam();
+  }
+
+  timeLeft--;
+}
+
+function generateSheet(total) {
+  const sheet = document.getElementById('sheet');
+  sheet.innerHTML = '';
+
+  for (let c = 0; c < 2; c++) {
+    const column = document.createElement('div');
+    column.className = 'column';
+
+    const itemsPerColumn = Math.ceil(total / 2);
+
+    let start = c * itemsPerColumn + 1;
+    let end = Math.min(start + itemsPerColumn - 1, total);
+
+    for (let i = start; i <= end; i++) {
+      const q = document.createElement('div');
+      q.className = 'question';
+
+      q.innerHTML = `
+        <div class="question-number">${i}.</div>
+        <div class="choices">
+          <label><input type="radio" name="q${i}" value="A">A</label>
+          <label><input type="radio" name="q${i}" value="B">B</label>
+          <label><input type="radio" name="q${i}" value="C">C</label>
+          <label><input type="radio" name="q${i}" value="D">D</label>
+          <label><input type="radio" name="q${i}" value="E">E</label>
+        </div>
+      `;
+
+      column.appendChild(q);
+    }
+
+    sheet.appendChild(column);
+  }
+}
+
+function submitExam() {
+  if (!currentExam) return;
+
+  clearInterval(timerInterval);
+
+  let score = 0;
+
+  for (let i = 1; i <= currentExam.total; i++) {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+
+    if (selected && selected.value === currentExam.answers[i - 1]) {
+      score++;
+    }
+  }
+
+  document.getElementById('result').innerHTML =
+    `Score: ${score} / ${currentExam.total}`;
+
+  saveAttempt(score);
+
+  renderGraph();
+}
+
+function saveAttempt(score) {
+  const key = currentExam.title + '_history';
+
+  let history = JSON.parse(localStorage.getItem(key)) || [];
+
+  history.push(score);
+
+  localStorage.setItem(key, JSON.stringify(history));
+}
+
+function renderGraph() {
+  if (!currentExam) return;
+
+  const key = currentExam.title + '_history';
+
+  let history = JSON.parse(localStorage.getItem(key)) || [];
+
+  const canvas = document.getElementById('graph');
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if (history.length === 0) {
+    ctx.font = '20px Arial';
+    ctx.fillText('No attempts yet.', 50, 50);
+    return;
+  }
+
+  const maxScore = currentExam.total;
+  const barWidth = 50;
+  const gap = 30;
+
+  history.forEach((score, index) => {
+    const x = 60 + index * (barWidth + gap);
+    const height = (score / maxScore) * 250;
+
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(x, 320 - height, barWidth, height);
+
+    ctx.fillStyle = 'black';
+    ctx.font = '14px Arial';
+
+    ctx.fillText(score, x + 8, 310 - height);
+    ctx.fillText(`Attempt ${index + 1}`, x - 10, 350);
+  });
+}
+</script>
+
+<div style="text-align:right; margin-top:40px; padding-right:10px; font-size:34px; color:#00000; font-style:italic;">
+  © Engr. FJR / Engr. Dyirom
+</div>
+
+</body>
+</html>
