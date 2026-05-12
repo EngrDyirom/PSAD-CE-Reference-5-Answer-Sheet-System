@@ -1,413 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CE Reference 5 Answer Sheet System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSAD Answer Sheet System</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<style>
 
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #AAA7AD;
-    }
+*{
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+body{
+  margin:0;
+  padding:20px;
+  background:#eef2ff;
+}
 
-    h1, h2 {
-      text-align: center;
-    }
+.container{
+  max-width:1300px;
+  margin:auto;
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
 
-    .selection {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
+h1,h2{
+  text-align:center;
+  color:#111827;
+}
 
-    select, button {
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
+.selection{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  justify-content:center;
+  margin-bottom:20px;
+}
 
-    button {
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
+select,button{
+  padding:12px 18px;
+  font-size:16px;
+  border-radius:12px;
+  border:1px solid #d1d5db;
+}
 
-    button:hover {
-      background: #1d4ed8;
-    }
+button{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;
+  cursor:pointer;
+  border:none;
+  transition:0.25s ease;
+  font-weight:bold;
+}
 
-    #timer {
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: #dc2626;
-      margin: 20px 0;
-    }
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(37,99,235,0.3);
+}
 
-    .sheet {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
+.timer-label{
+  text-align:center;
+  font-size:14px;
+  color:#6b7280;
+  margin-top:10px;
+  letter-spacing:2px;
+  font-weight:bold;
+}
 
-    .column {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-    }
+#timer{
+  width:fit-content;
+  margin:20px auto;
+  padding:18px 40px;
+  font-size:42px;
+  font-weight:bold;
+  letter-spacing:3px;
+  color:white;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  border-radius:20px;
+  text-align:center;
+}
 
-    .question {
-      margin-bottom: 18px;
-    }
+.sheet{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+  margin-top:20px;
+}
 
-    .question-number {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
+.column{
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:15px;
+  padding:18px;
+}
 
-    .choices {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+.question{
+  margin-bottom:20px;
+}
 
-    label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      padding: 10px;
-      min-width: 60px;
-      min-height: 60px;
-      border-radius: 12px;
-      border: 2px solid #d1d5db;
-      background: white;
-      cursor: pointer;
-      font-size: 18px;
-    }
+.question-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
 
-    label:hover {
-      background: #dbeafe;
-    }
+.question-number{
+  font-weight:bold;
+  color:#111827;
+}
 
-    input[type="radio"] {
-      transform: scale(1.4);
-    }
+.result-badge{
+  padding:5px 10px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:bold;
+  color:white;
+}
 
-    #result {
-      margin-top: 25px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
+.correct-badge{
+  background:#16a34a;
+}
 
-    canvas {
-      width: 100%;
-      max-width: 900px;
-      background: white;
-      border-radius: 12px;
-      margin: auto;
-      display: block;
-    }
+.wrong-badge{
+  background:#dc2626;
+}
 
-    @media (max-width: 768px) {
-      .sheet {
-        grid-template-columns: 1fr;
-      }
+.choices{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
 
-      label {
-        min-width: 70px;
-        min-height: 70px;
-      }
-    }
-  </style>
+label{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:10px;
+  min-width:60px;
+  min-height:60px;
+  border-radius:14px;
+  border:2px solid #d1d5db;
+  background:white;
+  cursor:pointer;
+  font-size:18px;
+  transition:0.2s;
+}
+
+label:hover{
+  background:#dbeafe;
+}
+
+input[type="radio"]{
+  transform:scale(1.3);
+}
+
+.correct-answer{
+  background:#16a34a !important;
+  color:white !important;
+  border:2px solid #15803d !important;
+}
+
+.wrong-answer{
+  background:#dc2626 !important;
+  color:white !important;
+  border:2px solid #991b1b !important;
+}
+
+#result{
+  margin-top:30px;
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+  color:#111827;
+}
+
+.table-container{
+  overflow-x:auto;
+  margin-top:25px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+th{
+  background:#2563eb;
+  color:white;
+  padding:14px;
+  font-size:16px;
+}
+
+td{
+  padding:14px;
+  text-align:center;
+  border-bottom:1px solid #e5e7eb;
+}
+
+tr:nth-child(even){
+  background:#f9fafb;
+}
+
+.passed{
+  color:#16a34a;
+  font-weight:bold;
+}
+
+.failed{
+  color:#dc2626;
+  font-weight:bold;
+}
+
+@media (max-width:768px){
+
+  .sheet{
+    grid-template-columns:1fr;
+  }
+
+  label{
+    min-width:70px;
+    min-height:70px;
+  }
+
+  #timer{
+    font-size:34px;
+    padding:16px 28px;
+  }
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="container">
-  <h1>PSAD - CE Reference 5 Answer Sheet System</h1>
 
-  <div class="selection">
-    <select id="examSelect">
-      <option value="">Select Exam</option>
-      <option value="PSAD_MAY2019">PSAD - May 2019</option>
-      <option value="PSAD_NOV2019">PSAD - November 2019</option>
-      <option value="PSAD_NOV2021">PSAD - November 2021</option>
-      <option value="PSAD_MAY2022">PSAD - May 2022</option>
-      <option value="PSAD_NOV2022">PSAD - November 2022</option>
-      <option value="PSAD_APR2023">PSAD - April 2023</option>
-      <option value="PSAD_NOV2023">PSAD - November 2023</option>
-    </select>
+<h1>PSAD Answer Sheet System</h1>
 
-    <button onclick="loadExam()">Load Exam</button>
-    <button onclick="startTimer()">Start Timer</button>
-  </div>
+<div class="selection">
 
-  <div id="timer"></div>
-  <div style="text-align:center; margin:10px 0; font-size:14px; color:#6b7280;">
-    To go back to the main page, just refresh your browser.
-  </div>
+<select id="examSelect">
 
-  <div class="sheet" id="sheet"></div>
+<option value="">Select Exam</option>
 
-  <div style="text-align:center; margin-top:20px;">
-    <button onclick="submitExam()">Submit Exam</button>
-  </div>
+<option value="PSAD_MAY2019">PSAD - May 2019</option>
+<option value="PSAD_NOV2019">PSAD - November 2019</option>
+<option value="PSAD_NOV2021">PSAD - November 2021</option>
+<option value="PSAD_MAY2022">PSAD - May 2022</option>
+<option value="PSAD_NOV2022">PSAD - November 2022</option>
+<option value="PSAD_APR2023">PSAD - April 2023</option>
+<option value="PSAD_NOV2023">PSAD - November 2023</option>
 
-  <div id="result"></div>
+</select>
 
-  <h2>Past Attempts</h2>
-  <canvas id="graph" width="900" height="400"></canvas>
+<button onclick="loadExam()">Load Exam</button>
+
+<button onclick="startTimer()">Start Timer</button>
+
+</div>
+
+<div class="timer-label">
+EXAM TIMER
+</div>
+
+<div id="timer">00:00</div>
+
+<div class="sheet" id="sheet"></div>
+
+<div style="text-align:center; margin-top:20px;">
+<button onclick="submitExam()">Submit Exam</button>
+</div>
+
+<div id="result"></div>
+
+<h2>Past Attempts</h2>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Attempt</th>
+<th>Exam</th>
+<th>Score</th>
+<th>Percentage</th>
+<th>Remarks</th>
+</tr>
+</thead>
+
+<tbody id="attemptTable">
+<tr>
+<td colspan="5">No attempts yet.</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
 </div>
 
 <script>
+
 const exams = {
-  "PSAD_MAY2019": {
-    title: "PSAD - May 2019",
-    duration: 360,
-    total: 69,
-    answers: [
-      'D','C','D','D','A','B','D','B','A','B','A','D','B','A','D','D','C','A','A','C','A','A','A','B','C','D','C','B','D','A','D','C','A','C','A','D','A','B','D','A','B','C','C','B','A','D','D','A','D','C','A','A','C','D','B','A','C','D','B','A','C','B','B','B','D','C','A','C','D'
-    ]
-  },
 
-  "PSAD_NOV2019": {
-    title: "PSAD - November 2019",
-    duration: 360,
-    total: 75,
-    answers: [
-      'B','C','D','A','D','C','D','A','B','B','C','C','A','C','D','C','D','A','B','C','A','A','D','C','C','C','D','A','D','C','B','C','A','B','D','A','A','D','A','B','D','A','D','D','A','B','A','C','B','D','D','A','D','B','D','D','A','D','B','B','D','B','D','B','B','D','C','C','B','C','D','A','B','C','D'
-    ]
-  },
+"PSAD_MAY2019":{
+title:"PSAD - May 2019",
+duration:360,
+total:69,
+answers:[
+'D','C','D','D','A','B','D','B','A','B',
+'A','D','B','A','D','D','C','A','A','C',
+'A','A','A','B','C','D','C','B','D','A',
+'D','C','A','C','A','D','A','B','D','A',
+'B','C','C','B','A','D','D','A','D','C',
+'A','A','C','D','B','A','C','D','B','A',
+'C','B','B','B','D','C','A','C','D'
+]
+},
 
-  "PSAD_NOV2021": {
-    title: "PSAD - November 2021",
-    duration: 360,
-    total: 69,
-    answers: [
-      'A','D','C','B','A','D','A','B','B','D','A','D','B','A','C','A','D','D','B','D','A','D','A','C','D','C','A','C','C','B','A','D','C','D','B','B','C','B','A','A','D','B','D','C','C','C','C','B','B','D','B','A','D','B','B','C','D','A','B','D','C','A','D','B','D','A','A','B','C'
-    ]
-  },
+"PSAD_NOV2019":{
+title:"PSAD - November 2019",
+duration:360,
+total:75,
+answers:[
+'B','C','D','A','D','C','D','A','B','B',
+'C','C','A','C','D','C','D','A','B','C',
+'A','A','D','C','C','C','D','A','D','C',
+'B','C','A','B','D','A','A','D','A','B',
+'D','A','D','D','A','B','A','C','B','D',
+'D','A','D','B','D','D','A','D','B','B',
+'D','B','D','B','B','D','C','C','B','C',
+'D','A','B','C','D'
+]
+},
 
-  "PSAD_MAY2022": {
-    title: "PSAD - May 2022",
-    duration: 360,
-    total: 72,
-    answers: [
-      'C','D','D','B','A','C','D','A','C','A','B','C','D','A','B','B','A','D','C','C','A','B','B','D','A','C','C','A','B','A','B','D','A','C','C','D','C','B','A','D','C','C','D','D','B','B','D','B','A','B','A','D','C','D','A','B','A','C','B','D','D','D','A','B','C','A','A','B','A','B','D','A'
-    ]
-  },
+"PSAD_NOV2021":{
+title:"PSAD - November 2021",
+duration:360,
+total:69,
+answers:[
+'A','D','C','B','A','D','A','B','B','D',
+'A','D','B','A','C','A','D','D','B','D',
+'A','D','A','C','D','C','A','C','C','B',
+'A','D','C','D','B','B','C','B','A','A',
+'D','B','D','C','C','C','C','B','B','D',
+'B','A','D','B','B','C','D','A','B','D',
+'C','A','D','B','D','A','A','B','C'
+]
+},
 
-  "PSAD_NOV2022": {
-    title: "PSAD - November 2022",
-    duration: 360,
-    total: 75,
-    answers: [
-      'C','A','B','D','B','A','C','A','D','D','D','B','B','A','C','A','B','C','A','B','B','D','B','A','A','B','C','A','C','C','B','D','B','B','D','A','C','D','A','C','D','B','C','D','C','B','C','D','D','B','A','C','C','D','B','C','C','D','B','A','C','B','B','A','C','D','C','D','C','D','A','D','B','A','C'
-    ]
-  },
+"PSAD_MAY2022":{
+title:"PSAD - May 2022",
+duration:360,
+total:72,
+answers:[
+'C','D','D','B','A','C','D','A','C','A',
+'B','C','D','A','B','B','A','D','C','C',
+'A','B','B','D','A','C','C','A','B','A',
+'B','D','A','C','C','D','C','B','A','D',
+'C','C','D','D','B','B','D','B','A','B',
+'A','D','C','D','A','B','A','C','B','D',
+'D','D','A','B','C','A','A','B','A','B',
+'D','A'
+]
+},
 
-  "PSAD_APR2023": {
-    title: "PSAD - April 2023",
-    duration: 360,
-    total: 74,
-    answers: [
-      'D','A','A','B','C','A','D','A','D','B','D','C','A','A','B','A','A','B','B','D','C','D','D','A','B','D','D','A','B','A','D','C','A','D','A','C','D','A','C','C','D','C','D','C','B','B','C','B','C','D','D','B','A','B','D','C','C','A','B','A','A','B','C','C','D','B','D','A','D','B','C','A','D','C'
-    ]
-  },
+"PSAD_NOV2022":{
+title:"PSAD - November 2022",
+duration:360,
+total:75,
+answers:[
+'C','A','B','D','B','A','C','A','D','D',
+'D','B','B','A','C','A','B','C','A','B',
+'B','D','B','A','A','B','C','A','C','C',
+'B','D','B','B','D','A','C','D','A','C',
+'D','B','C','D','C','B','C','D','D','B',
+'A','C','C','D','B','C','C','D','B','A',
+'C','B','B','A','C','D','C','D','C','D',
+'A','D','B','A','C'
+]
+},
 
-  "PSAD_NOV2023": {
-    title: "PSAD - November 2023",
-    duration: 360,
-    total: 73,
-    answers: [
-      'B','A','D','C','D','C','B','A','C','A','D','A','A','D','C','A','A','B','B','A','D','A','B','C','D','C','B','C','C','B','D','A','A','C','B','D','D','B','A','C','D','A','C','C','A','B','B','D','C','A','B','D','D','A','C','A','D','D','B','A','B','C','A','B','B','C','D','A','D','A','C','D'
-    ]
-  }
+"PSAD_APR2023":{
+title:"PSAD - April 2023",
+duration:360,
+total:74,
+answers:[
+'D','A','A','B','C','A','D','A','D','B',
+'D','C','A','A','B','A','A','B','B','D',
+'C','D','D','A','B','D','D','A','B','A',
+'D','C','A','D','A','C','D','A','C','C',
+'D','C','D','C','B','B','C','B','C','D',
+'D','B','A','B','D','C','C','A','B','A',
+'A','B','C','C','D','B','D','A','D','B',
+'C','A','D','C'
+]
+},
+
+"PSAD_NOV2023":{
+title:"PSAD - November 2023",
+duration:360,
+total:72,
+answers:[
+'B','A','D','C','D','C','B','A','C','A',
+'D','A','A','D','C','A','A','B','B','A',
+'D','A','B','C','D','C','B','C','C','B',
+'D','A','A','C','B','D','D','B','A','C',
+'D','A','C','C','A','B','B','D','C','A',
+'B','D','D','A','C','A','D','D','B','A',
+'B','C','A','B','B','C','D','A','D','A',
+'C','D'
+]
+}
+
 };
 
 let currentExam = null;
 let timerInterval;
 let timeLeft = 0;
 
-function loadExam() {
-  const selected = document.getElementById('examSelect').value;
+function loadExam(){
 
-  if (!selected) {
-    alert('Please select an exam first.');
-    return;
-  }
+const selected =
+document.getElementById('examSelect').value;
 
-  currentExam = exams[selected];
-
-  generateSheet(currentExam.total);
-
-  timeLeft = currentExam.duration * 60;
-
-  updateTimerDisplay();
-
-  renderGraph();
+if(!selected){
+alert('Please select an exam first.');
+return;
 }
 
-function startTimer() {
-  if (!currentExam) {
-    alert('Please load an exam first.');
-    return;
-  }
+currentExam = exams[selected];
 
-  clearInterval(timerInterval);
-  timerInterval = setInterval(updateTimer, 1000);
+generateSheet(currentExam.total);
+
+timeLeft = currentExam.duration * 60;
+
+updateTimerDisplay();
+
+document.getElementById('result').innerHTML='';
+
+renderAttempts();
 }
 
-function updateTimerDisplay() {
-  updateTimerDisplay();
+function startTimer(){
+
+if(!currentExam){
+alert('Please load an exam first.');
+return;
 }
 
-function updateTimer() {
-  const mins = Math.floor(timeLeft / 60);
-  const secs = timeLeft % 60;
+clearInterval(timerInterval);
 
-  document.getElementById('timer').innerHTML =
-    `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-
-  if (timeLeft <= 0) {
-    clearInterval(timerInterval);
-    submitExam();
-  }
-
-  timeLeft--;
+timerInterval =
+setInterval(updateTimer,1000);
 }
 
-function generateSheet(total) {
-  const sheet = document.getElementById('sheet');
-  sheet.innerHTML = '';
+function updateTimerDisplay(){
 
-  for (let c = 0; c < 2; c++) {
-    const column = document.createElement('div');
-    column.className = 'column';
+const mins = Math.floor(timeLeft / 60);
 
-    const itemsPerColumn = Math.ceil(total / 2);
+const secs = timeLeft % 60;
 
-    let start = c * itemsPerColumn + 1;
-    let end = Math.min(start + itemsPerColumn - 1, total);
-
-    for (let i = start; i <= end; i++) {
-      const q = document.createElement('div');
-      q.className = 'question';
-
-      q.innerHTML = `
-        <div class="question-number">${i}.</div>
-        <div class="choices">
-          <label><input type="radio" name="q${i}" value="A">A</label>
-          <label><input type="radio" name="q${i}" value="B">B</label>
-          <label><input type="radio" name="q${i}" value="C">C</label>
-          <label><input type="radio" name="q${i}" value="D">D</label>
-          <label><input type="radio" name="q${i}" value="E">E</label>
-        </div>
-      `;
-
-      column.appendChild(q);
-    }
-
-    sheet.appendChild(column);
-  }
+document.getElementById('timer').innerHTML =
+`${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
 }
 
-function submitExam() {
-  if (!currentExam) return;
+function updateTimer(){
 
-  clearInterval(timerInterval);
+updateTimerDisplay();
 
-  let score = 0;
+if(timeLeft <= 0){
 
-  for (let i = 1; i <= currentExam.total; i++) {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+clearInterval(timerInterval);
 
-    if (selected && selected.value === currentExam.answers[i - 1]) {
-      score++;
-    }
-  }
-
-  document.getElementById('result').innerHTML =
-    `Score: ${score} / ${currentExam.total}`;
-
-  saveAttempt(score);
-
-  renderGraph();
+submitExam();
 }
 
-function saveAttempt(score) {
-  const key = currentExam.title + '_history';
-
-  let history = JSON.parse(localStorage.getItem(key)) || [];
-
-  history.push(score);
-
-  localStorage.setItem(key, JSON.stringify(history));
+timeLeft--;
 }
 
-function renderGraph() {
-  if (!currentExam) return;
+function generateSheet(total){
 
-  const key = currentExam.title + '_history';
+const sheet =
+document.getElementById('sheet');
 
-  let history = JSON.parse(localStorage.getItem(key)) || [];
+sheet.innerHTML = '';
 
-  const canvas = document.getElementById('graph');
-  const ctx = canvas.getContext('2d');
+for(let c=0;c<2;c++){
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+const column =
+document.createElement('div');
 
-  if (history.length === 0) {
-    ctx.font = '20px Arial';
-    ctx.fillText('No attempts yet.', 50, 50);
-    return;
-  }
+column.className='column';
 
-  const maxScore = currentExam.total;
-  const barWidth = 50;
-  const gap = 30;
+const itemsPerColumn =
+Math.ceil(total/2);
 
-  history.forEach((score, index) => {
-    const x = 60 + index * (barWidth + gap);
-    const height = (score / maxScore) * 250;
+let start =
+c * itemsPerColumn + 1;
 
-    ctx.fillStyle = '#2563eb';
-    ctx.fillRect(x, 320 - height, barWidth, height);
+let end =
+Math.min(start + itemsPerColumn - 1,total);
 
-    ctx.fillStyle = 'black';
-    ctx.font = '14px Arial';
+for(let i=start;i<=end;i++){
 
-    ctx.fillText(score, x + 8, 310 - height);
-    ctx.fillText(`Attempt ${index + 1}`, x - 10, 350);
-  });
-}
-</script>
+const q =
+document.createElement('div');
 
-<div style="text-align:right; margin-top:40px; padding-right:10px; font-size:34px; color:#00000; font-style:italic;">
-  © Engr. FJR / Engr. Dyirom
+q.className='question';
+
+q.innerHTML=`
+
+<div class="question-header">
+
+<div class="question-number">
+${i}.
 </div>
+
+<div id="status${i}"></div>
+
+</div>
+
+<div class="choices">
+
+<label>
+<input type="radio" name="q${i}" value="A">
+A
+</label>
+
+<label>
+<input type="radio" name="q${i}" value="B">
+B
+</label>
+
+<label>
+<input type="radio" name="q${i}" value="C">
+C
+</label>
+
+<label>
+<input type="radio" name="q${i}" value="D">
+D
+</label>
+
+<label>
+<input type="radio" name="q${i}" value="E">
+E
+</label>
+
+</div>
+`;
+
+column.appendChild(q);
+}
+
+sheet.appendChild(column);
+}
+}
+
+function submitExam(){
+
+if(!currentExam){
+alert('Please load an exam first.');
+return;
+}
+
+clearInterval(timerInterval);
+
+let score = 0;
+
+for(let i=1;i<=currentExam.total;i++){
+
+const selected =
+document.querySelector(
+`input[name="q${i}"]:checked`
+);
+
+const correctAnswer =
+currentExam.answers[i - 1];
+
+const status =
+document.getElementById(`status${i}`);
+
+document
+.querySelectorAll(`input[name="q${i}"]`)
+.forEach(input=>{
+
+const label =
+input.parentElement;
+
+label.classList.remove(
+'correct-answer',
+'wrong-answer'
+);
+
+if(input.value === correctAnswer){
+
+label.classList.add('correct-answer');
+}
+});
+
+if(selected){
+
+if(selected.value === correctAnswer){
+
+score++;
+
+status.innerHTML = `
+<span class="
+result-badge
+correct-badge
+">
+CORRECT
+</span>
+`;
+
+}
+else{
+
+selected.parentElement.classList.add(
+'wrong-answer'
+);
+
+status.innerHTML = `
+<span class="
+result-badge
+wrong-badge
+">
+WRONG
+</span>
+`;
+}
+}
+else{
+
+status.innerHTML = `
+<span class="
+result-badge
+wrong-badge
+">
+NO ANSWER
+</span>
+`;
+}
+}
+
+const percentage =
+((score/currentExam.total)*100).toFixed(1);
+
+const remarks =
+percentage >= 70
+? "PASSED"
+: "FAILED";
+
+document.getElementById('result').innerHTML =
+`
+Score: ${score} / ${currentExam.total}<br>
+Percentage: ${percentage}%<br>
+Remarks: ${remarks}
+`;
+
+saveAttempt(score,percentage,remarks);
+
+renderAttempts();
+}
+
+function saveAttempt(score,percentage,remarks){
+
+const key =
+currentExam.title + '_history';
+
+let history =
+JSON.parse(localStorage.getItem(key)) || [];
+
+history.push({
+score,
+percentage,
+remarks
+});
+
+localStorage.setItem(
+key,
+JSON.stringify(history)
+);
+}
+
+function renderAttempts(){
+
+if(!currentExam) return;
+
+const key =
+currentExam.title + '_history';
+
+let history =
+JSON.parse(localStorage.getItem(key)) || [];
+
+const table =
+document.getElementById('attemptTable');
+
+if(history.length === 0){
+
+table.innerHTML = `
+<tr>
+<td colspan="5">
+No attempts yet.
+</td>
+</tr>
+`;
+
+return;
+}
+
+table.innerHTML = '';
+
+history.forEach((attempt,index)=>{
+
+let score;
+let percentage;
+let remarks;
+
+if(typeof attempt === 'number'){
+
+score = attempt;
+
+percentage =
+((score/currentExam.total)*100).toFixed(1);
+
+remarks =
+percentage >= 70
+? "PASSED"
+: "FAILED";
+}
+else{
+
+score = attempt.score;
+
+percentage = attempt.percentage;
+
+remarks = attempt.remarks;
+}
+
+const row =
+document.createElement('tr');
+
+row.innerHTML = `
+<td>${index + 1}</td>
+<td>${currentExam.title}</td>
+<td>${score} / ${currentExam.total}</td>
+<td>${percentage}%</td>
+<td class="${
+remarks === 'PASSED'
+? 'passed'
+: 'failed'
+}">
+${remarks}
+</td>
+`;
+
+table.appendChild(row);
+});
+}
+
+</script>
 
 </body>
 </html>
