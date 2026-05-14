@@ -61,6 +61,15 @@ button:hover{
   box-shadow:0 6px 15px rgba(37,99,235,0.3);
 }
 
+.clear-btn{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
+
+.load-again-btn{
+  background:linear-gradient(135deg,#059669,#047857);
+  margin-top:20px;
+}
+
 .timer-label{
   text-align:center;
   font-size:14px;
@@ -220,8 +229,6 @@ tr:nth-child(even){
   font-weight:bold;
 }
 
-/* POPUP */
-
 .popup-overlay{
   position:fixed;
   top:0;
@@ -264,6 +271,10 @@ tr:nth-child(even){
   font-size:16px;
 }
 
+.hidden{
+  display:none;
+}
+
 @keyframes popupFade{
   from{
     transform:scale(0.8);
@@ -298,8 +309,6 @@ tr:nth-child(even){
 
 <body>
 
-<!-- POPUP WATERMARK -->
-
 <div class="popup-overlay" id="watermarkPopup">
 
 <div class="popup-box">
@@ -308,15 +317,43 @@ tr:nth-child(even){
 
 <p>
 This review material and answer sheet system
-was created by <strong>Engr. Frank Jerome Refe</strong>.
+was created by <strong>Engr. Frank Jerome Refe</strong> and is exclusively for personal use only.
 </p>
 
 <p>
-Please use this material for personal use only.
+Please use this material responsibly.
 </p>
 
 <button onclick="closePopup()">
 Continue
+</button>
+
+</div>
+
+</div>
+
+<div class="popup-overlay" id="instructionPopup" style="display:none;">
+
+<div class="popup-box">
+
+<h2>EXAM INSTRUCTIONS</h2>
+
+<p style="text-align:left;">
+
+Select the correct answer for each of the following questions.
+
+<br><br>
+
+Choose only one answer for each item by selecting the box corresponding to the letter of your choice on the answer sheet provided.
+
+<br><br>
+
+<strong>GOOD LUCK.</strong>
+
+</p>
+
+<button onclick="confirmExamStart()">
+Start Exam
 </button>
 
 </div>
@@ -345,7 +382,27 @@ Continue
 
 <button onclick="loadExam()">Load Exam</button>
 
-<button onclick="startTimer()">Start Timer</button>
+<button class="clear-btn" onclick="clearHistory()">
+Clear History
+</button>
+
+</div>
+
+<div style="text-align:center; margin-top:25px;">
+
+<h2>Question Viewer</h2>
+
+<p style="
+color:#6b7280;
+margin-bottom:15px;
+font-size:15px;
+">
+Click the button below to open the question set.
+</p>
+
+<button onclick="openQuestions()">
+Generate Questions
+</button>
 
 </div>
 
@@ -358,10 +415,26 @@ EXAM TIMER
 <div class="sheet" id="sheet"></div>
 
 <div style="text-align:center; margin-top:20px;">
-<button onclick="submitExam()">Submit Exam</button>
+
+<button id="submitBtn" onclick="submitExam()">
+Submit Exam
+</button>
+
 </div>
 
 <div id="result"></div>
+
+<div style="text-align:center;">
+
+<button 
+id="loadAgainBtn"
+class="load-again-btn hidden"
+onclick="scrollToTop()"
+>
+Load Another Exam
+</button>
+
+</div>
 
 <h2>Past Attempts</h2>
 
@@ -373,15 +446,17 @@ EXAM TIMER
 <tr>
 <th>Attempt</th>
 <th>Exam</th>
+<th>Date</th>
 <th>Score</th>
 <th>Percentage</th>
+<th>Time Consumed</th>
 <th>Remarks</th>
 </tr>
 </thead>
 
 <tbody id="attemptTable">
 <tr>
-<td colspan="5">No attempts yet.</td>
+<td colspan="7">No attempts yet.</td>
 </tr>
 </tbody>
 
@@ -398,6 +473,14 @@ function closePopup(){
 document.getElementById(
 'watermarkPopup'
 ).style.display = 'none';
+}
+
+function scrollToTop(){
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
 }
 
 const exams = {
@@ -515,8 +598,11 @@ answers:[
 };
 
 let currentExam = null;
+let pendingExam = null;
 let timerInterval;
 let timeLeft = 0;
+let originalTime = 0;
+let examSubmitted = false;
 
 function loadExam(){
 
@@ -528,25 +614,44 @@ alert('Please select an exam first.');
 return;
 }
 
-currentExam = exams[selected];
+pendingExam = selected;
+
+examSubmitted = false;
+
+document.getElementById(
+'submitBtn'
+).classList.remove('hidden');
+
+document.getElementById(
+'loadAgainBtn'
+).classList.add('hidden');
+
+document.getElementById(
+'instructionPopup'
+).style.display = 'flex';
+}
+
+function confirmExamStart(){
+
+document.getElementById(
+'instructionPopup'
+).style.display = 'none';
+
+currentExam = exams[pendingExam];
 
 generateSheet(currentExam.total);
 
 timeLeft = currentExam.duration * 60;
 
+originalTime = timeLeft;
+
 updateTimerDisplay();
 
-document.getElementById('result').innerHTML='';
+document.getElementById(
+'result'
+).innerHTML='';
 
 renderAttempts();
-}
-
-function startTimer(){
-
-if(!currentExam){
-alert('Please load an exam first.');
-return;
-}
 
 clearInterval(timerInterval);
 
@@ -657,12 +762,64 @@ sheet.appendChild(column);
 }
 }
 
+function openQuestions(){
+
+if(!pendingExam){
+
+alert('Please load an exam first.');
+
+return;
+}
+
+const questionLinks = {
+
+"PSAD_MAY2019":"https://drive.google.com/file/d/1eUlNy2Q97aPKzpiPd9FGfXlpY-jvYsE5/view?usp=drive_link",
+"PSAD_NOV2019":"https://drive.google.com/file/d/1b8epX2HFMWQS141_nKHnIluH1gUYHWVD/view?usp=drive_link",
+"PSAD_NOV2021":"https://drive.google.com/file/d/1-7SgrsFSVkUwFJTtiGsChWrNYMB1qCzY/view?usp=drive_link",
+"PSAD_MAY2022":"https://drive.google.com/file/d/1OSOSg0qgkjn8vcRQceVD2hgvaeGuymDY/view?usp=drive_link",
+"PSAD_NOV2022":"https://drive.google.com/YOUR_LINK_HERE",
+"PSAD_APR2023":"https://drive.google.com/YOUR_LINK_HERE",
+"PSAD_NOV2023":"https://drive.google.com/YOUR_LINK_HERE"
+
+};
+
+const link = questionLinks[pendingExam];
+
+if(link){
+
+window.open(link,'_blank');
+
+}
+else{
+
+alert('Question link not available.');
+
+}
+}
+
 function submitExam(){
 
 if(!currentExam){
 alert('Please load an exam first.');
 return;
 }
+
+if(examSubmitted){
+alert(
+'You have already submitted this exam. Please load the exam again before submitting another answer sheet.'
+);
+return;
+}
+
+examSubmitted = true;
+
+document.getElementById(
+'submitBtn'
+).classList.add('hidden');
+
+document.getElementById(
+'loadAgainBtn'
+).classList.remove('hidden');
 
 clearInterval(timerInterval);
 
@@ -772,10 +929,30 @@ currentExam.title + '_history';
 let history =
 JSON.parse(localStorage.getItem(key)) || [];
 
+const timeUsed =
+originalTime - timeLeft;
+
+const hours =
+Math.floor(timeUsed / 3600);
+
+const minutes =
+Math.floor((timeUsed % 3600) / 60);
+
+const seconds =
+timeUsed % 60;
+
+const formattedTime =
+`${hours}h ${minutes}m ${seconds}s`;
+
+const currentDate =
+new Date().toLocaleString();
+
 history.push({
+date: currentDate,
 score,
 percentage,
-remarks
+remarks,
+time: formattedTime
 });
 
 localStorage.setItem(
@@ -801,7 +978,7 @@ if(history.length === 0){
 
 table.innerHTML = `
 <tr>
-<td colspan="5">
+<td colspan="7">
 No attempts yet.
 </td>
 </tr>
@@ -814,50 +991,51 @@ table.innerHTML = '';
 
 history.forEach((attempt,index)=>{
 
-let score;
-let percentage;
-let remarks;
-
-if(typeof attempt === 'number'){
-
-score = attempt;
-
-percentage =
-((score/currentExam.total)*100).toFixed(1);
-
-remarks =
-percentage >= 70
-? "PASSED"
-: "FAILED";
-}
-else{
-
-score = attempt.score;
-
-percentage = attempt.percentage;
-
-remarks = attempt.remarks;
-}
-
 const row =
 document.createElement('tr');
 
 row.innerHTML = `
 <td>${index + 1}</td>
 <td>${currentExam.title}</td>
-<td>${score} / ${currentExam.total}</td>
-<td>${percentage}%</td>
+<td>${attempt.date}</td>
+<td>${attempt.score} / ${currentExam.total}</td>
+<td>${attempt.percentage}%</td>
+<td>${attempt.time}</td>
 <td class="${
-remarks === 'PASSED'
+attempt.remarks === 'PASSED'
 ? 'passed'
 : 'failed'
 }">
-${remarks}
+${attempt.remarks}
 </td>
 `;
 
 table.appendChild(row);
 });
+}
+
+function clearHistory(){
+
+if(!currentExam){
+alert('Please load an exam first.');
+return;
+}
+
+const confirmClear =
+confirm(
+'Are you sure you want to clear all past attempts for this exam?'
+);
+
+if(!confirmClear) return;
+
+const key =
+currentExam.title + '_history';
+
+localStorage.removeItem(key);
+
+renderAttempts();
+
+alert('Past attempts cleared successfully.');
 }
 
 </script>
